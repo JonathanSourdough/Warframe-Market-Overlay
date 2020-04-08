@@ -1,4 +1,4 @@
-requests==2.19.1
+requests==2.20.0
 system_hotkey==1.0.3
 pytesseract==0.2.4
 Pillow==7.1.1
