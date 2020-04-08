@@ -17,7 +17,7 @@ pip install -r requirements.txt
 ```
 
 
-You will also need to install a version of tesseract (designed and tested using v5.0.0 Alpha.20190708 however any version should work)
+You will also need to install a version of tesseract. (designed and tested using v5.0.0 Alpha.20190708 however any version should work)
 https://github.com/tesseract-ocr/tesseract (Source Code)
 https://digi.bib.uni-mannheim.de/tesseract/ (Assembled Binaries)
 
@@ -27,7 +27,7 @@ Otherwise you will have to edit imagemethodcalc.py to find the .exe, theres a pl
 
 ## How to use
 
-Once you have done the above steps all you should need to do is run the script
+Once you have done the above steps all you should need to do is run the script.
 ```
 python overlay.py
 ```
@@ -45,30 +45,30 @@ The image above shows what you will see while using it, there is a "Search Windo
 
 The info Window will show you all the relevant information for the item being scanned.
 
-"Item" The name of the item scanned
+"Item" The name of the item scanned.
 "Accuracy" The % read accuracy. How sure the program is, that the text it was reading is what is being displayed.
-"Top Seller" The name of the player who is selling this item the cheapest
-"Top Plat" What the cheapest listed price is
-"Top 10 Avg" What the average of the top 10 listings are
-"Ducats" How many ducats the item is worth
-"Efficency" The Ducat/Platinum efficency is based off of the top seller
+"Top Seller" The name of the player who is selling this item the cheapest.
+"Top Plat" What the cheapest listed price is.
+"Top 10 Avg" What the average of the top 10 listings are.
+"Ducats" How many ducats the item is worth.
+"Efficency" The Ducat/Platinum efficency is based off of the top seller.
 
 <img src="ReadmeImages/DropDown.PNG">
 
 Most windows have a drop down menu that will do a variety of things.
 
-"New" opens a new search/info window
-"Close" closes the current window
-"Setting" opens the settings window for that info window
-"Main" opens the main window
-"Close all" closes all windows and reopens the main window
+"New" opens a new search/info window.
+"Close" closes the current window.
+"Setting" opens the settings window for that info window.
+"Main" opens the main window.
+"Close all" closes all windows and reopens the main window.
 
 <img src="ReadmeImages/Setting.PNG">
 
 For each of these windows there is a settings window, which can control what is displayed on each info window.
 
 You can choose between the global settings, and on or off.
-Each list item is self explanitory, given you have read the above section on the info window
+Each list item is self explanitory, given you have read the above section on the info window.
 
 <img src="ReadmeImages/Highlight.PNG">
 
@@ -80,7 +80,7 @@ Here you can load, save, and delete saved layouts. This feature is so you can cr
 If you choose the "default" option on the drop down menu, and save, that will be what opens whenever you first start the program.
 
 
-There is 2 new options at the top compared to what is in the individual settings windows
+There is 2 new options at the top compared to what is in the individual settings windows.
 
 "Load Background" Turning this off will unload the background picture which will save about 100MB of ram.
 "Show Icons" This determines whether or not the relic, platinum, and ducat pictures are displayed on the info windows.
@@ -93,3 +93,18 @@ At the bottom you can determine which listing type is displayed.
 
 
 You can also increase the UI scale up to 2x, using the slider at the bottom, this was mostly done to help support 4k monitors.
+
+# Thanks
+
+Thanks to everyone at Digital Extremes for creating and maintaining Warframe.
+https://www.warframe.com/
+
+Thanks to 42 Bytes for creating and maintaining warframe.market.
+https://warframe.market/
+https://www.patreon.com/42Bytes
+
+Thanks to everyone who helped me along this coding journey.
+
+Thanks to you the reader/user who was part of the why behind doing this.
+
+Code by Jonathan Sourdough
