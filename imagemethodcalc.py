@@ -11,7 +11,7 @@ cwd = os.getcwd()
 importantInfo = {}
 warframeParts = ["Chassis", "Systems", "Neuroptics"]
 primePartsnames = []
-pytesseract.pytesseract.tesseract_cmd = cwd + "/Tesseract-OCR-V5/tesseract.exe"
+# pytesseract.pytesseract.tesseract_cmd = cwd + "/Tesseract-OCR-V5/tesseract.exe"
 
 
 def generateDictFromMarketItems():
