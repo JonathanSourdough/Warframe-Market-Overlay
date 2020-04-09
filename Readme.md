@@ -40,6 +40,11 @@ Immediately, on the first run it will be set up for the relic rewards screen, at
 
 The image above shows what you will see while using it, there is a "Search Window", which is movable and resizable. Paired with it is an "Info Window", which is also movable. This will tell you all the info it can find on that item.
 
+<br/>
+I have it set up with a few system wide hotkeys<br/>
+To run the search function "Ctrl + Shift + F"<br/>
+To hide/show the overlay "Ctrl + Shift + H"
+
 <img src="ReadmeImages/InfoWindow.PNG">
 
 The info Window will show you all the relevant information for the item being scanned.
