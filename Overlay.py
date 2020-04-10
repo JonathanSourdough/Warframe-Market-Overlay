@@ -16,6 +16,7 @@ import json
 import time
 import os
 import time
+import webbrowser
 
 
 def scaleFactor():  # scale function, 1-2
@@ -102,12 +103,9 @@ def updateScan(event):
         windows.append(v[0])
         instance.infoWindowdict[v[0]].itemInfo = v[1]
     pool.close()
-    print(result)
     pool.terminate()
     pool.join()
-    print("Time Elapsed:", time.time() - startTime)
     updateInfo(windows)
-    print("barfoo")
 
 
 def updateDatabase():
@@ -119,7 +117,6 @@ def hideWindows(event):
     for tk, v in instance.windowTypes.items():
         for tk, sv in v.items():
             sv.setVisible(not sv.isVisible())
-    print("foobar")
 
 
 def loadMedia():  # load all the media
@@ -127,7 +124,6 @@ def loadMedia():  # load all the media
         Media["Background"] = QImage(cwd + r"\Media\Background.jpeg")  # load background
     mediaLoadLoop(iconLoadnames, "QPixmap")  # load Info Icons
     mediaLoadLoop(dropLoadnames, "QPixmap")  # load drop menu media
-    mediaLoadLoop(quitLoadnames, "QPixmap")  # load quit winodw media
     mediaLoadLoop(mainLoadnames, "QPixmap")  # load main window media
     mediaLoadLoop(radioLoadnames, "QPixmap")  # load radio buttons
     mediaLoadLoop(layoutsLoadnames, "QPixmap")  # load layout media
@@ -253,16 +249,12 @@ class radioConstructorclass(QWidget):
 
 
 class instanceWindow(QWidget):
-    mainWindowdict = {}
     globalSettingwindowDict = {}
-    quitWindowdict = {}
     searchWindowdict = {}
     infoWindowdict = {}
     settingWindowdict = {}
     windowTypes = {
-        "mainWindow": mainWindowdict,
         "globalSettingwindow": globalSettingwindowDict,
-        "quitWindow": quitWindowdict,
         "searchWindow": searchWindowdict,
         "infoWindow": infoWindowdict,
         "settingWindow": settingWindowdict,
@@ -405,9 +397,6 @@ class instanceWindow(QWidget):
                 )
         elif v == "GlobalIcon":
             self.newGlobalsettingWindow()
-        elif v == "MainIcon":
-            if not 0 in self.mainWindowdict:
-                self.mainWindowdict[0] = mainWindow(windowDesignation=0)
         elif v == "CloseAllIcon":
             self.closeAll()
         elif v == "QuitIcon":
@@ -478,23 +467,12 @@ class instanceWindow(QWidget):
                             # self.resize(w, h + dy)
 
     def checkLastwindow(self, windowType, windowDesignation):
-        if (
-            len(self.searchWindowdict)
-            + len(self.mainWindowdict)
-            + len(self.globalSettingwindowDict)
-            <= 1
-        ) and (windowType != "settingWindow"):
-            if not 0 in self.quitWindowdict:
-                self.quitWindowdict[0] = quitWindow(windowDesignation=0)
-            else:
-                app.quit()
-            return
-        elif (
-            not len(self.searchWindowdict)
-            + len(self.mainWindowdict)
-            + len(self.globalSettingwindowDict)
-            <= 1
+        if (len(self.searchWindowdict) + len(self.globalSettingwindowDict) <= 1) and (
+            windowType != "settingWindow"
         ):
+            app.quit()
+            return
+        elif not len(self.searchWindowdict) + len(self.globalSettingwindowDict) <= 1:
             if (windowType == "infoWindow") or (windowType == "searchWindow"):
                 settingsDict[windowDesignation]["searchWindow"] = {
                     "posX": self.searchWindowdict[windowDesignation].x(),
@@ -519,13 +497,6 @@ class instanceWindow(QWidget):
                     "sizeX": self.globalSettingwindowDict[windowDesignation].width(),
                     "sizeY": self.globalSettingwindowDict[windowDesignation].height(),
                 }
-            if windowType == "mainWindow":
-                settingsDict[windowDesignation]["mainWindow"] = {
-                    "posX": self.mainWindowdict[windowDesignation].x(),
-                    "posY": self.mainWindowdict[windowDesignation].y(),
-                    "sizeX": self.mainWindowdict[windowDesignation].width(),
-                    "sizeY": self.mainWindowdict[windowDesignation].height(),
-                }
         if windowType == "settingWindow":
             if windowDesignation in self.settingWindowdict:
                 settingsDict[windowDesignation]["settingWindow"] = {
@@ -543,8 +514,8 @@ class instanceWindow(QWidget):
 
     def closeAll(self):
         killList = []
-        if not 0 in self.mainWindowdict:
-            self.mainWindowdict[0] = mainWindow(windowDesignation=0)
+        if not 0 in self.globalSettingwindowDict:
+            self.globalSettingwindowDict[0] = globalSettingwindow(windowDesignation=0)
         for k in self.infoWindowdict:
             killList.append(k)
         for k in killList:
@@ -600,19 +571,6 @@ class instanceWindow(QWidget):
             QTimer.singleShot(0, (lambda: target.resize(target.minimumWidth(), target.height())))
         QTimer.singleShot(0, (lambda: target.dropMenu.setSizePos()))
 
-    def quitScaler(self):
-        self.yesButton.setIcon(Media["YesIcon"])
-        self.yesButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.yesButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.spacer.changeSize(10 * scaleFactor(), 0)
-        self.noButton.setIcon(Media["NoIcon"])
-        self.noButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.noButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.textLabela.setFont(QFont("Tahoma", 16 * scaleFactor(), 3))
-        self.textLabelb.setFont(QFont("Tahoma", 16 * scaleFactor(), 3))
-        self.windowBox.setMargin(10 * scaleFactor())
-        QTimer.singleShot(0, (lambda: self.resize(self.minimumSize())))
-
     def closeEvent(self, event):
         self.checkLastwindow(self.__class__.__name__, self.windowDesignation)
         event.ignore()
@@ -646,69 +604,6 @@ class instanceWindow(QWidget):
         self.drawContainer(painter)
 
 
-class mainWindow(instanceWindow):
-    dropIcons = ["NewIcon", "CloseIcon", "CloseAllIcon", "QuitIcon", "ResetIcon", "GlobalIcon"]
-
-    def __init__(self, parent=None, **kwargs):
-        super().__init__(windowDesignation=kwargs["windowDesignation"])
-        self.parent = parent
-        self.setStyleSheet("QPushButton {background-color: transparent;}")
-        self.windowBox = QHBoxLayout()
-        self.windowBox.addStretch(0)
-        self.hBox = QHBoxLayout()
-        self.buttonDict = {
-            "newButton": QPushButton(self, icon=Media["NewIconMain"]),
-            # "logInbutton": QPushButton(self, icon=Media["LogInIcon"]),
-            # "logOutbutton": QPushButton(self, icon=Media["LogOutIcon"]),
-            "globalSettingsbutton": QPushButton(self, icon=Media["SettingIconMain"]),
-            # "Patreonbutton": QPushButton(self, icon=Media["PatreonIcon"]),
-            # "Infobutton": QPushButton(self, icon=Media["InfoIcon"]),
-        }
-        self.buttonDict["newButton"].setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.buttonDict["newButton"].setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.hBox.addWidget(self.buttonDict["newButton"])
-        self.buttonDict["newButton"].clicked.connect(self.newSearchwindow)
-        # self.buttonDict["logInbutton"].setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.buttonDict["logInbutton"].setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.hBox.addWidget(self.buttonDict["logInbutton"])
-        # self.buttonDict['logInbutton'].clicked.connect(logInfunc) ####### Waiting on patreon integration
-        # self.buttonDict["logOutbutton"].setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.buttonDict["logOutbutton"].setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.hBox.addWidget(self.buttonDict["logOutbutton"])
-        # self.buttonDict['logOutbutton'].clicked.connect(logOutfunc) ####### Waiting on patreon integration
-        self.buttonDict["globalSettingsbutton"].setIconSize(
-            QSize(90 * scaleFactor(), 40 * scaleFactor())
-        )
-        self.buttonDict["globalSettingsbutton"].setFixedSize(
-            QSize(90 * scaleFactor(), 40 * scaleFactor())
-        )
-        self.hBox.addWidget(self.buttonDict["globalSettingsbutton"])
-        self.buttonDict["globalSettingsbutton"].clicked.connect(self.newGlobalsettingWindow)
-        # self.buttonDict["Patreonbutton"].setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.buttonDict["Patreonbutton"].setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.hBox.addWidget(self.buttonDict["Patreonbutton"])
-        # self.buttonDict['Patreonbutton'].clicked.connect(Patreonfunc) ####### Waiting on patreon integration
-        # self.buttonDict["Infobutton"].setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.buttonDict["Infobutton"].setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        # self.hBox.addWidget(self.buttonDict["Infobutton"])
-        # selfself.buttonDict['Infobutton'].clicked.connect(Infofunc) ####### Need to add tutorial window
-        self.hBox.setContentsMargins(
-            10 * scaleFactor(), 10 * scaleFactor(), 10 * scaleFactor(), 10 * scaleFactor()
-        )
-        self.windowBox.addLayout(self.hBox)
-        self.windowBox.addStretch(0)
-        self.dropMenu = dropConstructorclass(self)
-        # self.windowBox.addWidget(self.dropMenu)
-        self.windowBox.setMargin(5 * scaleFactor())
-        self.setLayout(self.windowBox)
-        self.loadWindowsettings()
-        self.show()
-        QTimer.singleShot(0, (lambda: self.dropMenu.setSizePos()))
-        if 0 in self.quitWindowdict:
-            self.quitWindowdict.pop(0)
-        self.dropMenu.setSizePos()
-
-
 class searchWindow(instanceWindow):
     def __init__(self, **kwargs):
         super().__init__(windowDesignation=kwargs["windowDesignation"])
@@ -734,7 +629,7 @@ class searchWindow(instanceWindow):
 
 
 class infoWindow(instanceWindow):
-    dropIcons = ["NewIcon", "CloseIcon", "SettingIcon", "MainIcon", "CloseAllIcon"]
+    dropIcons = ["NewIcon", "CloseIcon", "SettingIcon", "GlobalIcon", "CloseAllIcon"]
     itemInfo = None
 
     def __init__(self, **kwargs):
@@ -827,9 +722,6 @@ class infoWindow(instanceWindow):
         self.setLayout(self.windowBox)
         self.updateDisplay()
         self.show()
-        if 0 in self.quitWindowdict:
-            self.quitWindowdict[0].destroy()
-            self.quitWindowdict.pop(0)
         self.dropMenu.setSizePos()
 
     def updateDisplay(self):
@@ -995,7 +887,7 @@ class globalSettingwindow(instanceWindow):
     xOptions1 = ["On", "Off"]
     yOptions2 = ["Listings Shown"]
     xOptions2 = ["Sell", "Buy"]
-    dropIcons = ["CloseIcon"]
+    dropIcons = ["NewIcon", "CloseIcon", "CloseAllIcon", "QuitIcon", "ResetIcon"]
 
     def __init__(self, **kwargs):
         super().__init__(windowDesignation=kwargs["windowDesignation"])
@@ -1111,6 +1003,31 @@ class globalSettingwindow(instanceWindow):
         self.windowBox.addLayout(self.sliderHbox)
         self.sliderHbox.setContentsMargins(0, 0, 0, 5 * scaleFactor())
         self.windowBox.addStretch(0)
+        # New and Info Buttons
+        self.bottomButtonhBox = QHBoxLayout()
+        self.bottomButtonhBox.addStretch(0)
+        self.newButton = QPushButton(self, icon=Media["NewIconMain"])
+        self.infoButton = QPushButton(self, icon=Media["InfoIcon"])
+        self.newButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.newButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.bottomButtonhBox.addWidget(self.newButton)
+        self.bottomButtonhBox.addStretch(0)
+        self.newButton.clicked.connect(self.newSearchwindow)
+        self.infoButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.infoButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.bottomButtonhBox.addWidget(self.infoButton)
+        self.infoButton.clicked.connect(
+            lambda: webbrowser.open(
+                "https://github.com/JonathanSourdough/Warframe-Market-Overlay#warframe-market-overlay"
+            )
+        )
+        self.bottomButtonhBox.addStretch(0)
+        self.windowBox.addLayout(self.bottomButtonhBox)
+        self.bottomButtonhBox.setContentsMargins(
+            10 * scaleFactor(), 10 * scaleFactor(), 10 * scaleFactor(), 10 * scaleFactor()
+        )
+        self.windowBox.addStretch(0)
+        # Wrap up
         self.dropMenu = dropConstructorclass(self)
         self.setLayout(self.windowBox)
         self.loadWindowsettings()
@@ -1153,15 +1070,6 @@ class globalSettingwindow(instanceWindow):
                 "sizeX": self.globalSettingwindowDict[windowDesignation].width(),
                 "sizeY": self.globalSettingwindowDict[windowDesignation].height(),
             }
-        for windowDesignation in self.mainWindowdict:
-            if windowDesignation not in tempDict:
-                tempDict[windowDesignation] = {}
-            tempDict[windowDesignation]["mainWindow"] = {
-                "posX": self.mainWindowdict[windowDesignation].x(),
-                "posY": self.mainWindowdict[windowDesignation].y(),
-                "sizeX": self.mainWindowdict[windowDesignation].width(),
-                "sizeY": self.mainWindowdict[windowDesignation].height(),
-            }
         tempDict["globalRadio"] = settingsDict["globalRadio"]
         tempDict["listing"] = settingsDict["listing"]
         tempDict["scale"] = settingsDict["scale"]
@@ -1182,8 +1090,6 @@ class globalSettingwindow(instanceWindow):
                     self.savedLayoutscomboBox.itemText(self.savedLayoutscomboBox.currentIndex())
                 ]
             )
-            self.windowTypes["mainWindow"][0].destroy()
-            self.windowTypes["mainWindow"].pop(0)
             self.windowTypes["globalSettingwindow"][0].destroy()
             self.windowTypes["globalSettingwindow"].pop(0)
             self.savedLayoutscomboBox.setCurrentIndex(-1)
@@ -1195,8 +1101,6 @@ class globalSettingwindow(instanceWindow):
                     instance.globalSettingwindowDict[k] = globalSettingwindow(windowDesignation=k)
                 if "settingWindow" in v:
                     instance.settingWindowdict[k] = settingWindow(windowDesignation=k)
-                if "mainWindow" in v:
-                    instance.mainWindowdict[k] = mainWindow(windowDesignation=k)
 
     def deleteLayout(self, *args):
         global layoutsDict
@@ -1304,22 +1208,14 @@ class globalSettingwindow(instanceWindow):
         self.sliderLspacer.changeSize(5 * scaleFactor(), 5 * scaleFactor())
         self.sliderRspacer.changeSize(5 * scaleFactor(), 5 * scaleFactor())
         self.sliderHbox.setContentsMargins(0, 0, 0, 5 * scaleFactor())
-        # Main Window
-        if 0 in self.mainWindowdict:
-            for tk, v in self.mainWindowdict[0].buttonDict.items():
-                v.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-                v.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-            self.mainWindowdict[0].windowBox.setMargin(5 * scaleFactor())
-            QTimer.singleShot(
-                0,
-                lambda mainWindowdict=self.mainWindowdict: self.scaleResizer(
-                    self.mainWindowdict[0]
-                ),
-            )
-            self.mainWindowdict[0].update()
-        # Quit Window
-        for tk, v in self.quitWindowdict.items():
-            QTimer.singleShot(0, lambda v=v: quitScaler(v))
+        # Bottom Buttons
+        self.newButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.newButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.infoButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.infoButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
+        self.bottomButtonhBox.setContentsMargins(
+            10 * scaleFactor(), 10 * scaleFactor(), 10 * scaleFactor(), 10 * scaleFactor()
+        )
         # Info Window
         for tk, v in self.infoWindowdict.items():
             for tk, sv in v.labelTextdict.items():
@@ -1372,58 +1268,13 @@ class globalSettingwindow(instanceWindow):
         self.oldPos = event.globalPos()
 
 
-class quitWindow(instanceWindow):
-    windowDesignation = 0
-
-    def __init__(self, **kwargs):
-        super().__init__(windowDesignation=kwargs["windowDesignation"])
-        self.setStyleSheet("QLabel{color: white;}")
-        self.pressed = False
-        self.itemPressed = []
-        self.move(800, 300)
-        self.windowBox = QVBoxLayout()
-        self.windowBox.addStretch(0)
-        self.textLabela = QLabel("There are no windows left.", self)
-        self.textLabela.setFont(QFont("Tahoma", 16 * scaleFactor(), 3))
-        self.textLabela.setAlignment(Qt.AlignHCenter)
-        self.windowBox.addWidget(self.textLabela)
-        self.textLabelb = QLabel("Would you like to quit?", self)
-        self.textLabelb.setFont(QFont("Tahoma", 16 * scaleFactor(), 3))
-        self.textLabelb.setAlignment(Qt.AlignHCenter)
-        self.windowBox.addWidget(self.textLabelb)
-        self.hBox = QHBoxLayout()
-        self.hBox.addStretch(0)
-        self.yesButton = QPushButton(self, icon=Media["YesIcon"])
-        self.yesButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.yesButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.hBox.addWidget(self.yesButton)
-        self.spacer = QSpacerItem(10 * scaleFactor(), 0)
-        self.hBox.addItem(self.spacer)
-        self.yesButton.clicked.connect(lambda: self.closeEvent("button"))
-        self.noButton = QPushButton(self, icon=Media["NoIcon"])
-        self.noButton.setIconSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.noButton.setFixedSize(QSize(90 * scaleFactor(), 40 * scaleFactor()))
-        self.hBox.addWidget(self.noButton)
-        self.noButton.clicked.connect(lambda: self.closeSelf("button"))
-        self.hBox.addStretch(0)
-        self.windowBox.addLayout(self.hBox)
-        self.windowBox.addStretch(0)
-        self.windowBox.setMargin(10 * scaleFactor())
-        self.setLayout(self.windowBox)
-        self.show()
-
-    def closeEvent(self, event):
-        app.quit()
-
-    def closeSelf(self, event):
-        self.destroy()
-        self.quitWindowdict.pop(0)
-
-
 def windowCreate():
     global instance
     instance = instanceWindow(windowDesignation=0)
-    instance.mainWindowdict[0] = mainWindow(instance, windowDesignation=0)
+    hk = SystemHotkey()
+    hk.register(("control", "shift", "f"), callback=updateScan)
+    hk.register(("control", "shift", "h"), callback=hideWindows)
+    hk.register(("control", "shift", "h"), callback=instance.newSearchwindow)
     for k, v in settingsDict.items():
         if "searchWindow" in v:
             instance.searchWindowdict[k] = searchWindow(windowDesignation=k)
@@ -1480,12 +1331,6 @@ if __name__ == "__main__":
         "sizeX": 230,
         "sizeY": 205,
     }
-    mainWindowdefaults = {  # default settings window settings
-        "posX": 800,
-        "posY": 500,
-        "sizeX": 200,
-        "sizeY": 200,
-    }
     globalSettingwindowdefaults = {  # default settings window settings
         "posX": 300,
         "posY": 500,
@@ -1498,7 +1343,6 @@ if __name__ == "__main__":
         "searchWindow": searchDefaults,
         "infoWindow": infoDefaults,
         "settingWindow": settingDefaults,
-        "mainWindow": mainWindowdefaults,
         "globalSettingwindow": globalSettingwindowdefaults,
         "radio": radioDefaults,
     }  # defaults when a new window is called
@@ -1508,7 +1352,6 @@ if __name__ == "__main__":
             "listing": [0],
             "scale": [0],
             0: {
-                "mainWindow": {"posX": 666, "posY": 520, "sizeX": 600, "sizeY": 200},
                 "radio": [0, 0, 0, 0, 0, 0, 0],
                 "searchWindow": {"posX": 478, "posY": 398, "sizeX": 236, "sizeY": 67},
                 "infoWindow": {"posX": 478, "posY": 78, "sizeX": 200, "sizeY": 145},
@@ -1534,7 +1377,7 @@ if __name__ == "__main__":
             "globalRadio": [0, 0, 0, 0, 0, 0, 0, 0, 0],
             "listing": [0],
             "scale": [0],
-            0: {"mainWindow": {"posX": 666, "posY": 520, "sizeX": 600, "sizeY": 200}},
+            0: {"globalSettingwindow": {"posX": 94, "posY": 107, "sizeX": 261, "sizeY": 440}},
         },
     }
     try:  # tries to find the file the layouts saves to
@@ -1555,7 +1398,6 @@ if __name__ == "__main__":
         "QuitIcon",
         "ResetIcon",
     ]  # load names for the drop menu
-    quitLoadnames = ["YesIcon", "NoIcon"]  # load names for the quit window
     frameLoadnames = ["HBar", "VBar", "TLCorner"]  # load names for the frame for all windows
     iconLoadnames = [
         "PlatinumIcon",
@@ -1563,14 +1405,7 @@ if __name__ == "__main__":
         "FormaIcon",
         "RelicIcon",
     ]  # load names for the info window icons
-    mainLoadnames = [
-        "NewIconMain",
-        "LogInIcon",
-        "LogOutIcon",
-        "PatreonIcon",
-        "InfoIcon",
-        "SettingIconMain",
-    ]  # load names for the main window
+    mainLoadnames = ["NewIconMain", "InfoIcon"]  # load names for the main window
     radioLoadnames = ["RadioOffIcon", "RadioOnIcon"]  # load names for the radio buttons
     layoutsLoadnames = [
         "DefaultLayouts",
@@ -1595,9 +1430,6 @@ if __name__ == "__main__":
     #    ): hideWindows,
     # }
     # current_keys = set()
-    hk = SystemHotkey()
-    hk.register(("control", "shift", "f"), callback=updateScan)
-    hk.register(("control", "shift", "h"), callback=hideWindows)
     instance = None
     app = QApplication(sys.argv)
     loadMedia()
