@@ -86,13 +86,17 @@ There is 2 new options at the top compared to what is in the individual settings
 "Show Icons" This determines whether or not the relic, platinum, and ducat pictures are displayed on the info windows.
 
 <br/>
-At the bottom you can determine which listing type is displayed.
+You can determine also which listing type is displayed.
 
 "Sell" will show the WTS (Want To Sell) listings from warframe.market<br />
 "Buy" will show the WTB (Want To Buy) listings
 
 <br/>
-You can also increase the UI scale up to 2x, using the slider at the bottom, this was mostly done to help support 4k monitors.
+You can increase the UI scale up to 2x, using the slider at the bottom, this was mostly done to help support 4k monitors.
+
+<br/>
+You can also create a new scan window with the "New" button at the bottom<br/>
+The "Info" Button will take you to the Readme on GitHub
 
 # Thanks
 
