@@ -103,10 +103,8 @@ def updateScan(event):
         windows.append(v[0])
         instance.infoWindowdict[v[0]].itemInfo = v[1]
     pool.close()
-    print(result)
     pool.terminate()
     pool.join()
-    print("Time Elapsed:", time.time() - startTime)
     updateInfo(windows)
 
 
