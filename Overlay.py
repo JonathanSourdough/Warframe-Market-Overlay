@@ -108,7 +108,6 @@ def updateScan(event):
     pool.join()
     print("Time Elapsed:", time.time() - startTime)
     updateInfo(windows)
-    print("barfoo")
 
 
 def updateDatabase():
@@ -120,7 +119,6 @@ def hideWindows(event):
     for tk, v in instance.windowTypes.items():
         for tk, sv in v.items():
             sv.setVisible(not sv.isVisible())
-    print("foobar")
 
 
 def loadMedia():  # load all the media
