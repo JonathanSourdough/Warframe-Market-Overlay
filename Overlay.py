@@ -1273,10 +1273,8 @@ def windowCreate():
     instance = instanceWindow(windowDesignation=0)
     hk = SystemHotkey()
     hk.register(("control", "shift", "f"), callback=updateScan)
-    def initSearch(event):
-    	hideWindows(event)
-    	instance.newSearchwindow(event)
-    hk.register(("control", "shift", "h"), callback=initSearch)
+    hk.register(("control", "shift", "h"), callback=hideWindows)
+    # hk.register(("control", "shift", "h"), callback=instance.newSearchwindow
     for k, v in settingsDict.items():
         if "searchWindow" in v:
             instance.searchWindowdict[k] = searchWindow(windowDesignation=k)
