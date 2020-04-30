@@ -112,8 +112,9 @@ def updateDatabase():
     global importantInfo, primePartsnames
     importantInfo, primePartsnames = imagemethodcalc.getImportantinfo()
 
-
-def hideWindows(event):
+@Slot()
+def hideWindows():
+    global instance
     for tk, v in instance.windowTypes.items():
         for tk, sv in v.items():
             sv.setVisible(not sv.isVisible())
@@ -259,6 +260,7 @@ class instanceWindow(QWidget):
         "infoWindow": infoWindowdict,
         "settingWindow": settingWindowdict,
     }
+    hidden = False
 
     def __init__(self, **kwargs):
         QWidget.__init__(self)
@@ -267,6 +269,7 @@ class instanceWindow(QWidget):
         self.itemPressed = []
         self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
+
 
     def newSearchwindow(self):
         for i in range(100):
@@ -1270,10 +1273,12 @@ class globalSettingwindow(instanceWindow):
 
 def windowCreate():
     global instance
+    showHide = showHidethread()
     instance = instanceWindow(windowDesignation=0)
     hk = SystemHotkey()
     hk.register(("control", "shift", "f"), callback=updateScan)
-    hk.register(("control", "shift", "h"), callback=hideWindows)
+    hk.register(("control", "shift", "h"), 
+                callback=showHide.run)
     # hk.register(("control", "shift", "h"), callback=instance.newSearchwindow
     for k, v in settingsDict.items():
         if "searchWindow" in v:
@@ -1306,6 +1311,20 @@ def on_release(key):
         current_keys.remove(key)
     except:
         pass
+
+
+class Communicate(QObject):
+    signalHide = Signal()
+
+
+class showHidethread(QThread):
+    def __init__(self, parent=None):
+        QThread.__init__(self, parent)
+        self.signal = Communicate()
+        self.signal.signalHide.connect(hideWindows)
+    
+    def run(self, event):
+        self.signal.signalHide.emit()
 
 
 if __name__ == "__main__":
