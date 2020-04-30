@@ -657,17 +657,17 @@ class infoWindow(instanceWindow):
             "efficencyPlatinum": QLabel(self),
         }
         self.labelTextdict = {
-            "relicItem": QLabel("Item:", self, Qt.AlignVCenter),
-            "relicAccuracy": QLabel("Accuracy:", self, Qt.AlignVCenter),
-            "platinumPrice": QLabel("Top plat:", self, Qt.AlignVCenter),
-            "platinumAvg": QLabel("Top 10 Avg:", self, Qt.AlignVCenter),
-            "ducatValue": QLabel("Ducats:", self, Qt.AlignVCenter),
-            "efficencyValue": QLabel("Efficency:", self, Qt.AlignVCenter),
+            "relicItem": QLabel("Item:", self, Qt.WindowFlags(Qt.AlignVCenter)),
+            "relicAccuracy": QLabel("Accuracy:", self, Qt.WindowFlags(Qt.AlignVCenter)),
+            "platinumPrice": QLabel("Top plat:", self, Qt.WindowFlags(Qt.AlignVCenter)),
+            "platinumAvg": QLabel("Top 10 Avg:", self, Qt.WindowFlags(Qt.AlignVCenter)),
+            "ducatValue": QLabel("Ducats:", self, Qt.WindowFlags(Qt.AlignVCenter)),
+            "efficencyValue": QLabel("Efficency:", self, Qt.WindowFlags(Qt.AlignVCenter)),
         }
         if settingsDict["listing"][0] == 0:
-            self.labelTextdict["platinumPlayer"] = QLabel("Top Seller:", self, Qt.AlignVCenter)
+            self.labelTextdict["platinumPlayer"] = QLabel("Top Seller:", self, Qt.WindowFlags(Qt.AlignVCenter))
         else:
-            self.labelTextdict["platinumPlayer"] = QLabel("Top Buyer:", self, Qt.AlignVCenter)
+            self.labelTextdict["platinumPlayer"] = QLabel("Top Buyer:", self, Qt.WindowFlags(Qt.AlignVCenter))
         for k in self.vBoxdict:
             self.vBoxdict[k].setSpacing(2)
         for k in self.hBoxdict:
@@ -915,7 +915,7 @@ class globalSettingwindow(instanceWindow):
         self.windowBox.addSpacerItem(self.topSpacer)
         # Saved Layouts
         self.savedLayoutsnames = []
-        self.savedLayoutsInfo = QLabel("Saved Layouts", self, Qt.AlignVCenter)
+        self.savedLayoutsInfo = QLabel("Saved Layouts", self, Qt.WindowFlags(Qt.AlignVCenter))
         self.savedLayoutsInfo.setFont(QFont("Tahoma", 8 * scaleFactor(), 3))
         self.savedLayoutsInfohBox = QHBoxLayout()
         self.savedLayoutsInfohBox.addStretch(0)
@@ -979,7 +979,7 @@ class globalSettingwindow(instanceWindow):
                 10 * scaleFactor(), 0, 10 * scaleFactor(), 10 * scaleFactor()
             )
         # Scale Slider
-        self.sliderInfo = QLabel("UI Scale", self, Qt.AlignVCenter)
+        self.sliderInfo = QLabel("UI Scale", self, Qt.WindowFlags(Qt.AlignVCenter))
         self.sliderInfo.setFont(QFont("Tahoma", 8 * scaleFactor(), 3))
         self.sliderInfohBox = QHBoxLayout()
         self.sliderInfohBox.addStretch(0)
@@ -1274,7 +1274,7 @@ def windowCreate():
     hk = SystemHotkey()
     hk.register(("control", "shift", "f"), callback=updateScan)
     hk.register(("control", "shift", "h"), callback=hideWindows)
-    hk.register(("control", "shift", "h"), callback=instance.newSearchwindow)
+    # hk.register(("control", "shift", "h"), callback=instance.newSearchwindow
     for k, v in settingsDict.items():
         if "searchWindow" in v:
             instance.searchWindowdict[k] = searchWindow(windowDesignation=k)
