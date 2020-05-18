@@ -23,21 +23,6 @@ def scaleFactor():  # scale function, 1-2
     return settingsDict["scale"][0] / 10 + 1
 
 
-class NoDaemonProcess(multiprocessing.Process):
-    # make 'daemon' attribute always return False
-    def _get_daemon(self):
-        return False
-
-    def _set_daemon(self, value):
-        pass
-
-    daemon = property(_get_daemon, _set_daemon)
-
-
-class MyPool(multiprocessing.pool.Pool):
-    Process = NoDaemonProcess
-
-
 def updateInfo(windows):
     global importantInfo
     for v in windows:
@@ -88,11 +73,23 @@ def updateInfo(windows):
         currinfoWindow.labelTextdict["efficencyValue"].setText("Efficency: " + ducatEfficency[:4])
 
 
+class NoDaemonProcess(multiprocessing.Process):
+    # make 'daemon' attribute always return False
+    def _get_daemon(self):
+        return False
+
+    def _set_daemon(self, value):
+        pass
+
+    daemon = property(_get_daemon, _set_daemon)
+
+
 def updateScan(event):
     startTime = time.time()
     updateDatabase()
     global importantInfo
-    pool = MyPool()
+    pool = multiprocessing.Pool()
+    pool.Process = NoDaemonProcess
     multiprocessing.Process().daemon = False
     starMapargs = []
     for k, v in instance.searchWindowdict.items():
@@ -111,6 +108,7 @@ def updateScan(event):
 def updateDatabase():
     global importantInfo, primePartsnames
     importantInfo, primePartsnames = imagemethodcalc.getImportantinfo()
+
 
 @Slot()
 def hideWindows():
@@ -269,7 +267,6 @@ class instanceWindow(QWidget):
         self.itemPressed = []
         self.setWindowFlags(Qt.Tool | Qt.FramelessWindowHint)
         self.setWindowFlags(self.windowFlags() | Qt.WindowStaysOnTopHint)
-
 
     def newSearchwindow(self):
         for i in range(100):
@@ -668,9 +665,13 @@ class infoWindow(instanceWindow):
             "efficencyValue": QLabel("Efficency:", self, Qt.WindowFlags(Qt.AlignVCenter)),
         }
         if settingsDict["listing"][0] == 0:
-            self.labelTextdict["platinumPlayer"] = QLabel("Top Seller:", self, Qt.WindowFlags(Qt.AlignVCenter))
+            self.labelTextdict["platinumPlayer"] = QLabel(
+                "Top Seller:", self, Qt.WindowFlags(Qt.AlignVCenter)
+            )
         else:
-            self.labelTextdict["platinumPlayer"] = QLabel("Top Buyer:", self, Qt.WindowFlags(Qt.AlignVCenter))
+            self.labelTextdict["platinumPlayer"] = QLabel(
+                "Top Buyer:", self, Qt.WindowFlags(Qt.AlignVCenter)
+            )
         for k in self.vBoxdict:
             self.vBoxdict[k].setSpacing(2)
         for k in self.hBoxdict:
@@ -1277,9 +1278,8 @@ def windowCreate():
     instance = instanceWindow(windowDesignation=0)
     hk = SystemHotkey()
     hk.register(("control", "shift", "f"), callback=updateScan)
-    hk.register(("control", "shift", "h"), 
-                callback=showHide.run)
-    # hk.register(("control", "shift", "h"), callback=instance.newSearchwindow
+    hk.register(("control", "shift", "h"), callback=showHide.run)
+    # hk.register(("control", "shift", "n"), callback=instance.newSearchwindow
     for k, v in settingsDict.items():
         if "searchWindow" in v:
             instance.searchWindowdict[k] = searchWindow(windowDesignation=k)
@@ -1322,7 +1322,7 @@ class showHidethread(QThread):
         QThread.__init__(self, parent)
         self.signal = Communicate()
         self.signal.signalHide.connect(hideWindows)
-    
+
     def run(self, event):
         self.signal.signalHide.emit()
 

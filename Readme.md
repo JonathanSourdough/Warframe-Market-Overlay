@@ -8,7 +8,7 @@ Currently the program is full operational, however, it is not highly optimized, 
 
 ## Prerequisites
 
-You will need to install python (designed and tested in Python 3.7.0)<br />
+You will need to install python (designed and tested in Python 3.8.2)<br />
 https://www.python.org/downloads/
 
 Once python is installed you will need to install the required packages, Included in the repo is a requirements.txt to make your life easy.<br />
@@ -43,7 +43,7 @@ The image above shows what you will see while using it, there is a "Search Windo
 <br/>
 I have it set up with a few system wide hotkeys<br/>
 To run the search function "Ctrl + Shift + F"<br/>
-To hide/show the overlay "Ctrl + Shift + H"
+To hide/show the overlay "Ctrl + Shift + H"<br/>
 
 <img src="ReadmeImages/InfoWindow.PNG">
 
